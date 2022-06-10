@@ -1,5 +1,6 @@
 package com.rudraksh.springboot.config;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
+import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.rudraksh.springboot.service.UserService;
@@ -19,49 +22,65 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-	
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
 	@Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
-        auth.setUserDetailsService(userService);
-        auth.setPasswordEncoder(passwordEncoder());
-        return auth;
-    }
-	
+	public DaoAuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
+		auth.setUserDetailsService(userService);
+		auth.setPasswordEncoder(passwordEncoder());
+		return auth;
+	}
+
 	@Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(authenticationProvider());
-    }
-	
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.authenticationProvider(authenticationProvider());
+	}
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-		
-		//.anyRequest().authenticated()
-	.antMatchers(
-				 "/registration**",
-	                "/js/**",
-	                "/css/**",
-	                "/img/**"
-	                ).permitAll()
-		.and()
-		.formLogin()
-		.loginPage("/")
-		.defaultSuccessUrl("/home",true)
-		.permitAll()
-		.and()
-		.logout()
-		.invalidateHttpSession(true)
-		.clearAuthentication(true)
-		.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-		.logoutSuccessUrl("/?logout").deleteCookies("JSESSIONID")
-		.invalidateHttpSession(true)
-		.permitAll();
+		http.authorizeRequests().antMatchers(
+						"/registration/**",
+						"/saveTeacher/**",
+						"/js/**",
+						"/css/**",
+						"/img/**").permitAll().antMatchers(
+						"/updateTeacher/**","/home/**",
+						"/accountSetting/**",
+						"/showFormForUpdateProfile/**",
+						"/api/activities/**").authenticated()
+
+				//.anyRequest().authenticated()
+				.and()
+				.formLogin()
+				.loginPage("/").
+				loginProcessingUrl("/login").
+				defaultSuccessUrl("/home")
+				.permitAll()
+				.and()
+				.logout()
+				.invalidateHttpSession(true)
+				.clearAuthentication(true)
+				.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+				.logoutSuccessUrl("/").deleteCookies("JSESSIONID").addLogoutHandler(
+						new HeaderWriterLogoutHandler(
+								new ClearSiteDataHeaderWriter(
+										ClearSiteDataHeaderWriter.Directive.CACHE,
+										ClearSiteDataHeaderWriter.Directive.COOKIES,
+										ClearSiteDataHeaderWriter.Directive.STORAGE
+								)
+						)
+				)
+				.permitAll();
+
+
+		http.cors().disable();
+		http.csrf().disable();
+		http.headers().frameOptions().disable();
 	}
 
 }

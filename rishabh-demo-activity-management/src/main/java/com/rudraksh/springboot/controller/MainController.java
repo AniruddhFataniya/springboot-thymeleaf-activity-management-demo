@@ -9,20 +9,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class MainController {
-	
+
 	@GetMapping("/")
-	public String login(Model model) {
-		 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-	            return "sign-in";
-	        }
-	 
-	        return "redirect:/home";
-		//return "sign-in";
+	public String login() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
+			return "sign-in";
+		return "redirect:/home";
 	}
-	
+
 	@GetMapping("/home")
 	public String home() {
-		return "index";
+		return "show-all-activities";
 	}
 }

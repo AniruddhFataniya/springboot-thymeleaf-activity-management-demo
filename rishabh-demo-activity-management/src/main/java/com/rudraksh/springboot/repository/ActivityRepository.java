@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.rudraksh.springboot.model.Activity;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ActivityRepository extends JpaRepository<Activity, Integer> {
 
 	@Query(value="Select u.id, u.first_name , u.last_name, a.activity_name, a.activity_desc, a.deadline_date, a.user_id from user u inner join activity a on u.id=a.user_id", nativeQuery=true)

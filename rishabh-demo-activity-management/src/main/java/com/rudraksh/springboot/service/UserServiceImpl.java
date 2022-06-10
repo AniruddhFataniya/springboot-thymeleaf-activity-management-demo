@@ -41,7 +41,11 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	ActivityRepository activityRepository;
 
-	
+
+	@Override
+	public CustomUser findByEmail(String userName) {
+		return userRepository.findByEmail(userName);
+	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

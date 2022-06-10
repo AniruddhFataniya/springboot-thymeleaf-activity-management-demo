@@ -12,7 +12,7 @@ import com.rudraksh.springboot.web.dto.UserRegistrationDto;
 public interface UserService extends UserDetailsService{
 	CustomUser saveTeacher(UserRegistrationDto registrationDto);
 	CustomUser saveStudent(UserRegistrationDto registrationDto);
-	
+	CustomUser findByEmail(String userName);
 	void save(Activity theActivity);
 	
 	List<Activity> listMyActivity();

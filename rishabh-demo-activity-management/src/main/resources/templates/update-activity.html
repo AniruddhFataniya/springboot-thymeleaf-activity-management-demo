@@ -1,3 +1,17 @@
+<!--
+=========================================================
+* Material Dashboard 2 - v=3.0.2
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/material-dashboard
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,7 +43,7 @@
       <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
       <a class="navbar-brand m-0" href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
        <!--  <img src="../static/img/logo-ct.png" th:src="@{../static/img/logo-ct.png}"  class="navbar-brand-img h-100" alt="main_logo">-->
-        <span class="ms-1 font-weight-bold text-white">Activity Management</span>
+        <span class="ms-1 font-weight-bold text-white">Add Activity</span>
       </a>
     </div>
     <hr class="horizontal light mt-0 mb-2">
@@ -38,7 +52,7 @@
       
       <li class="nav-item" sec:authorize="hasRole('TEACHER')">
          <!--  <a class="nav-link text-white " href="./pages/tables.html"> -->
-           <a class="nav-link text-white " href="api/activities/showMyActivity" th:href="@{api/activities/showMyActivity}">
+           <a class="nav-link text-white " href="/api/activities/showMyActivity" th:href="@{/api/activities/showMyActivity}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <span class="material-symbols-outlined">
 				settings_accessibility
@@ -57,7 +71,7 @@
           </a>
         </li>-->
         <li class="nav-item">
-            <a class="nav-link text-white " href="/showActivity" th:href="@{/showActivity}"> 
+            <a class="nav-link text-white " href="/api/activities/showActivity" th:href="@{/api/activities/showActivity}">
          
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <!--<i class="material-icons opacity-10">receipt_long</i> -->
@@ -70,7 +84,7 @@
         </li>
         <li class="nav-item" sec:authorize="hasRole('TEACHER')">
          <!--  <a class="nav-link text-white " href="./pages/tables.html"> -->
-           <a class="nav-link text-white " href="/showActivityForm" th:href="@{/showActivityForm}">
+           <a class="nav-link text-white " href="/api/activities/showActivityForm" th:href="@{/api/activities/showActivityForm}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <span class="material-symbols-outlined">
 				add_circle
@@ -91,8 +105,6 @@
             <span class="nav-link-text ms-1">Update Profile</span>
           </a>
         </li>
-       
-        
   <!--   <div class="sidenav-footer position-absolute w-100 bottom-0 ">
       <div class="mx-3" sec:authorize="isAuthenticated()" >
       	
@@ -108,13 +120,15 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
             <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
-            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Activities</li>
+            <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Add Activity</li>
           </ol>
-          <h6 class="font-weight-bolder mb-0">Activities</h6>
+          <h6 class="font-weight-bolder mb-0">Add Activity</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-            
+            <div class="input-group input-group-outline">
+              
+            </div>
           </div>
           <ul class="navbar-nav  justify-content-end">
             <li class="nav-item d-flex align-items-center" sec:authorize="isAuthenticated()">
@@ -216,8 +230,85 @@
       </div>
     </nav>
     <!-- End Navbar -->
-    <div class="container-fluid py-4">
-      <div class="row">
+   <!--  <div class="container-fluid py-3">  -->
+   <div class="col-lg-8 col-md-8 col-12 mx-auto">
+     <div class="card-body">
+             
+                <form th:action="@{/api/activities/saveActivity}" method="post" th:object="${activity}" role="form" class="text-start">
+                	
+				<!-- <div class="form-group">
+					
+						<label class="control-label" for="firstName"> First Name </label>
+						<input id="firstName" class="form-control" th:field="*{firstName}"
+							required autofocus="autofocus" />
+					</div> -->
+					<!-- Place for messages: error, alert etc ... -->
+					    <div class="form-group">
+					        <div class="col-xs-15">
+					            <div>
+								
+									<!-- Check for registration error -->
+									<div th:if="${registrationError}" class="alert alert-danger col-xs-offset-1 col-xs-10">
+										<span th:text="${registrationError}"></span>
+									</div>
+																											
+					            </div>
+					        </div>
+					    </div>
+					
+                  <div class="input-group input-group-outline my-3" for="activityName">
+                   
+                   <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                    <input type="text" class="form-control" id ="activityName" name = "activityName"
+						placeholder="Activity Name" autofocus="autofocus" th:field="*{activityName}">
+						
+                  </div>
+                  <div th:if="${#fields.hasErrors('activityName')}"
+							style="margin-bottom: 25px" class="text-danger">
+							<ul>
+							  <li th:each="err : ${#fields.errors('activityName')}" th:text="'Activity name ' + ${err}" />
+							</ul>						
+				</div>
+                  
+                  <div class="input-group input-group-outline my-3" for="activityDesc">
+                  
+                    <input type="text" class="form-control" id ="activityDesc" name = "activityDesc"
+						placeholder="Activity Description" autofocus="autofocus" th:field="*{activityDesc}">
+												
+                  </div>
+                  <div th:if="${#fields.hasErrors('activityDesc')}"
+							style="margin-bottom: 25px" class="text-danger">
+							<ul>
+							  <li th:each="err : ${#fields.errors('activityDesc')}" th:text="'Activity Description ' + ${err}" />
+							</ul>						
+				</div>
+                  
+                  <div class="input-group input-group-outline my-3" for="email">
+                  
+                    <input type="date" class="form-control" id ="deadLine" name = "deadLine"
+						 autofocus="autofocus" th:field="*{deadLine}">
+						
+                  </div>
+                  <div th:if="${#fields.hasErrors('deadLine')}"
+							style="margin-bottom: 25px" class="text-danger">
+							<ul>
+							  <li th:each="err : ${#fields.errors('deadLine')}" th:text="'Dead Line ' + ${err}" />
+							</ul>						
+				</div>
+                  
+                  
+                  
+                  
+                 
+                  <div class="text-center">
+                    <button type="submit" name="submit" id="submit" class="btn bg-gradient-primary w-35 my-4 mb-2">Save</button>
+                  </div>
+                  
+                </form>
+              </div>
+            </div>
+          
+      <!-- <div class="row">
         <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
           <div class="card">
             <div class="card-header p-3 pt-2">
