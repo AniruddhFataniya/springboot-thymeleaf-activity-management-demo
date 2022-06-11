@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @Component
-public class MapStructMapperImpl implements MapStructMapper {
+public class CustomMapperImpl implements CustomMapper {
 
     @Override
     public List<ActivityWithUser> iActivityWithUsertoActivityWithUser(List<IActivityWithUser> l) {

@@ -1,7 +1,7 @@
 package com.rudraksh.springboot.controller;
 
 
-import com.rudraksh.springboot.mapper.MapStructMapper;
+import com.rudraksh.springboot.mapper.CustomMapper;
 import com.rudraksh.springboot.model.Activity;
 import com.rudraksh.springboot.repository.ActivityRepository;
 import com.rudraksh.springboot.service.ActivityService;
@@ -9,14 +9,12 @@ import com.rudraksh.springboot.service.UserService;
 import com.rudraksh.springboot.web.dto.ActivityWithUser;
 import com.rudraksh.springboot.web.dto.IActivityWithUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -24,7 +22,7 @@ import java.util.List;
 public class ActivityController {
 
     @Autowired
-    private MapStructMapper mapStructMapper;
+    private CustomMapper customMapper;
 
     @Autowired
     private ActivityService activityService;
@@ -46,12 +44,7 @@ public class ActivityController {
     @GetMapping("/showActivity")
     public String showActivity(Model theModel) {
         List<IActivityWithUser> iActivity = activityRepository.listActivity();
-        List<ActivityWithUser> listOfActivities = mapStructMapper.iActivityWithUsertoActivityWithUser(iActivity);
-//        List<ActivityWithUser> listOfActivities = new ArrayList<>();
-//        for (IActivityWithUser i : iActivity){
-//            listOfActivities.add(new ActivityWithUser(i.getFirstName(),i.getLastName(),i.getActivityName(),i.getActivityDesc(),i.getDeadlineDate()));
-//        }
-//        listOfActivities.forEach(i -> System.out.println(i.toString()));
+        List<ActivityWithUser> listOfActivities = customMapper.iActivityWithUsertoActivityWithUser(iActivity);
         theModel.addAttribute("activity", listOfActivities);
         return "show-all-activities";
     }
