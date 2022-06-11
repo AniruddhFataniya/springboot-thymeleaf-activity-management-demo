@@ -25,8 +25,7 @@ public interface UserService extends UserDetailsService{
 	
 	public List<Activity> listActivityByKeyword(String keyword);
 	
-	//List<Activity> listMyActivityByKeyword(String keyword);
-	
+
 	
 	
 	
