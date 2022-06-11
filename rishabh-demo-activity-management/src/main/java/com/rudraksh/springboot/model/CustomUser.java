@@ -17,12 +17,15 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name =  "user", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 //@Table(name =  "user")
 @DynamicUpdate
-public class CustomUser {
+public class CustomUser implements UserDetails {
 	
 	@Id
 	@GeneratedValue(strategy =  GenerationType.IDENTITY)
@@ -48,12 +51,12 @@ public class CustomUser {
 				            name = "role_id", referencedColumnName = "id"))
 	
 	private Collection<Role> roles;
-	
+
 	/*@OneToMany(targetEntity = Activity.class,cascade = CascadeType.ALL)
 	@JoinColumn(name="user_fk", referencedColumnName="id")
 	List<Activity> activities = new ArrayList<>();*/
-	
-	
+
+
 	/*public List<Activity> getActivities() {
 		return activities;
 	}
@@ -63,11 +66,12 @@ public class CustomUser {
 	}*/
 
 	public CustomUser() {
-		
+
+
 	}
 	
 	public CustomUser(Long id,String firstName, String lastName, String email, String password, Collection<Role> roles) {
-		super();
+
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -99,9 +103,41 @@ public class CustomUser {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return null;
+	}
+
 	public String getPassword() {
 		return password;
 	}
+
+	@Override
+	public String getUsername() {
+		return email;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}

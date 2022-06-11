@@ -17,7 +17,7 @@ public class UserRegistrationDto {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	@Column(name = "first_name")
+
 	@NotNull(message = "is required")
 	@Size(min = 1, message = "is required")
 	private String firstName;

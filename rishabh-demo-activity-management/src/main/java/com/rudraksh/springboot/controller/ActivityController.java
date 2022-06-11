@@ -2,8 +2,11 @@ package com.rudraksh.springboot.controller;
 
 
 import com.rudraksh.springboot.model.Activity;
+import com.rudraksh.springboot.repository.ActivityRepository;
 import com.rudraksh.springboot.service.ActivityService;
 import com.rudraksh.springboot.service.UserService;
+import com.rudraksh.springboot.web.dto.ActivityWithUser;
+import com.rudraksh.springboot.web.dto.IActivityWithUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
@@ -12,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -22,6 +26,9 @@ public class ActivityController {
     private ActivityService activityService;
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ActivityRepository activityRepository;
 
     @PostMapping("/saveActivity")
     public String saveActivity(@Valid @ModelAttribute("activity") Activity theActivity, BindingResult theBindingResult) {
@@ -34,8 +41,13 @@ public class ActivityController {
 
     @GetMapping("/showActivity")
     public String showActivity(Model theModel) {
-        List<Activity> theActivity = activityService.findAll();
-        theModel.addAttribute("activity", theActivity);
+        List<IActivityWithUser> iActivity = activityRepository.listActivity();
+        List<ActivityWithUser> listOfActivities = new ArrayList<>();
+        for (IActivityWithUser i : iActivity){
+            listOfActivities.add(new ActivityWithUser(i.getFirstName(),i.getLastName(),i.getActivityName(),i.getActivityDesc(),i.getDeadlineDate()));
+        }
+        listOfActivities.forEach(i -> System.out.println(i.toString()));
+        theModel.addAttribute("activity", listOfActivities);
         return "show-all-activities";
     }
 
@@ -54,7 +66,7 @@ public class ActivityController {
 
     @GetMapping("/showMyActivity")
     public String showMyActivity(Model theModel) {
-        List<Activity> theActivity = userService.listMyActivity();
+        List<Activity> theActivity = activityService.findMyActivity();
         theModel.addAttribute("activity", theActivity);
         return "my-activities";
     }

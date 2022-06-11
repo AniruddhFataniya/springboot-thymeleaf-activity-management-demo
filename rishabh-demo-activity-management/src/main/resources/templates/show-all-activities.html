@@ -261,10 +261,10 @@
 	</thead>
 	<tbody>
 		<tr th:each="tempActivity : ${activity}">
-			   <td th:text="${tempActivity.user.firstName + ' ' + tempActivity.user.lastName}">
+			   <td th:text="${tempActivity.firstName + ' ' + tempActivity.lastName}">
 		 	<td th:text="${tempActivity.activityName}">
 			<td th:text="${tempActivity.activityDesc}">			
-			 <td th:text="${tempActivity.deadLine}">
+			 <td th:text="${tempActivity.deadlineDate}">
 		</tr>
 	</tbody>
 	
@@ -751,7 +751,7 @@
           </div>
         </div>
       </div>
-     <!--   <footer class="footer py-4  ">
+       <footer class="footer py-4  ">
         <div class="container-fluid">
           <div class="row align-items-center justify-content-lg-between">
             <div class="col-lg-6 mb-lg-0 mb-4">

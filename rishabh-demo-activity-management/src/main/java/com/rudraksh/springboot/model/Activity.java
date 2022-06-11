@@ -21,7 +21,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name="activity")
 public class Activity{
-	
+
+	public Activity(String activityName, String activityDesc, CustomUser user, Date deadLine) {
+		this.activityName = activityName;
+		this.activityDesc = activityDesc;
+		this.user = user;
+		this.deadLine = deadLine;
+	}
+
 	/**
 	 * 
 	 */

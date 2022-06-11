@@ -11,6 +11,8 @@ public interface ActivityService {
 
     List<Activity> findAll();
 
+    List<Activity> findMyActivity();
+
     Optional<Activity> findById(int theId);
 
     void deleteById(int theId);

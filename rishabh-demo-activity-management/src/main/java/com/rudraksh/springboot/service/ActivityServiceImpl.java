@@ -36,6 +36,15 @@ public class ActivityServiceImpl implements ActivityService{
     }
 
     @Override
+    public List<Activity> findMyActivity() {
+        Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(auth.toString());
+        System.out.println(auth.getPrincipal() instanceof CustomUser);
+
+        CustomUser currentUser = userRepository.findByEmail(auth.getName());
+        return activityRepository.findByUser(currentUser);
+    }
+    @Override
     public Optional<Activity> findById(int theId) {
         return activityRepository.findById(theId);
     }

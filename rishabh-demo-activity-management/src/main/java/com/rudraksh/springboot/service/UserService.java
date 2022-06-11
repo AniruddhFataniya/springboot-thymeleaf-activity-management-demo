@@ -14,9 +14,7 @@ public interface UserService extends UserDetailsService{
 	CustomUser saveStudent(UserRegistrationDto registrationDto);
 	CustomUser findByEmail(String userName);
 	void save(Activity theActivity);
-	
-	List<Activity> listMyActivity();
-	
+
 	Activity findById(int theId);
 	
 	public void deleteById(int theId);

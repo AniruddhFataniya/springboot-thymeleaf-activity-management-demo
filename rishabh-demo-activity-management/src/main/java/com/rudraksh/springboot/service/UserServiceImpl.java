@@ -98,16 +98,7 @@ public class UserServiceImpl implements UserService{
 		
 	}
 
-	@Override
-	public List<Activity> listMyActivity() {
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		 String username = auth.getName();
-			System.out.println(username);
-			CustomUser currentUser = userRepository.findByEmail(username);
-			Long id = currentUser.getId();
-			//theActivity.setUser(currentUser);
-		return activityRepository.listMyActivity(id);
-	}
+
 	
 	@Override
 	public List<CustomUser> listMe() {
@@ -179,28 +170,5 @@ public class UserServiceImpl implements UserService{
 		return activityRepository.listActivityByKeyword(keyword);
 	}
 
-	/*@Override
-	public List<Activity> listMyActivityByKeyword(String keyword) {
-		
-		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-		 String username = auth.getName();
-			System.out.println(username);
-			CustomUser currentUser = userRepository.findByEmail(username);
-			Long id = currentUser.getId();
-		
-		return activityRepository.listMyActivityByKeyword(id, keyword);
-	}*/
-	
-	
 
-	
-
-	/*@Override
-	public Activity saveActivity(ActivityDto activityDto) {
-		
-		Activity activity = new Activity(activityDto.getActivityName(),activityDto.getActivityDesc(),new User());
-		
-		return activityRepository.save(activity);
-	}*/
-	
 }
