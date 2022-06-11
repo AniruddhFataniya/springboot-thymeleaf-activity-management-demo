@@ -1,6 +1,7 @@
 package com.rudraksh.springboot.controller;
 
 
+import com.rudraksh.springboot.mapper.MapStructMapper;
 import com.rudraksh.springboot.model.Activity;
 import com.rudraksh.springboot.repository.ActivityRepository;
 import com.rudraksh.springboot.service.ActivityService;
@@ -23,6 +24,9 @@ import java.util.List;
 public class ActivityController {
 
     @Autowired
+    private MapStructMapper mapStructMapper;
+
+    @Autowired
     private ActivityService activityService;
     @Autowired
     private UserService userService;
@@ -42,11 +46,12 @@ public class ActivityController {
     @GetMapping("/showActivity")
     public String showActivity(Model theModel) {
         List<IActivityWithUser> iActivity = activityRepository.listActivity();
-        List<ActivityWithUser> listOfActivities = new ArrayList<>();
-        for (IActivityWithUser i : iActivity){
-            listOfActivities.add(new ActivityWithUser(i.getFirstName(),i.getLastName(),i.getActivityName(),i.getActivityDesc(),i.getDeadlineDate()));
-        }
-        listOfActivities.forEach(i -> System.out.println(i.toString()));
+        List<ActivityWithUser> listOfActivities = mapStructMapper.iActivityWithUsertoActivityWithUser(iActivity);
+//        List<ActivityWithUser> listOfActivities = new ArrayList<>();
+//        for (IActivityWithUser i : iActivity){
+//            listOfActivities.add(new ActivityWithUser(i.getFirstName(),i.getLastName(),i.getActivityName(),i.getActivityDesc(),i.getDeadlineDate()));
+//        }
+//        listOfActivities.forEach(i -> System.out.println(i.toString()));
         theModel.addAttribute("activity", listOfActivities);
         return "show-all-activities";
     }
