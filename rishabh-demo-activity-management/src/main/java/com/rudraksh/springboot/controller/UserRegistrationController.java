@@ -1,7 +1,9 @@
 package com.rudraksh.springboot.controller;
 
 import java.util.List;
+import java.util.Optional;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import com.rudraksh.springboot.service.ActivityService;
@@ -31,45 +33,65 @@ import com.rudraksh.springboot.service.UserService;
 import com.rudraksh.springboot.web.dto.UserRegistrationDto;
 
 
-
 @Controller
 public class UserRegistrationController {
 
-	private UserService userService;
+    private UserService userService;
 
-	private ActivityService activityService;
+    private ActivityService activityService;
 
-	@Autowired
-	public UserRegistrationController(UserService userService, ActivityService activityService) {
-		super();
-		this.userService = userService;
-		this.activityService = activityService;
-	}
+    @Autowired
+    public UserRegistrationController(UserService userService, ActivityService activityService) {
+        super();
+        this.userService = userService;
+        this.activityService = activityService;
+    }
 
-	@InitBinder
-	public void initBinder(WebDataBinder dataBinder) {
-		StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
-		dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
-	}
+    @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    }
 
 
-	@ModelAttribute("user")
-	public UserRegistrationDto userRegistrationDto() {
-		return new UserRegistrationDto();
-	}
+    @ModelAttribute("user")
+    public UserRegistrationDto userRegistrationDto() {
+        return new UserRegistrationDto();
+    }
 
-	@GetMapping("/showTeacherSignupForm")
-	public String showTeacherRegistrationForm() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
-			return "sign-up-teacher";
-		return "redirect:/home";
-	}
+    @GetMapping("/showTeacherSignupForm")
+    public String showTeacherRegistrationForm() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
+            return "sign-up-teacher";
+        return "redirect:/home";
+    }
 
-	@GetMapping("/showStudentSignupForm")
-	public String showStudentRegistrationForm() {
-		return "sign-up-student";
-	}
+    @GetMapping("/showStudentSignupForm")
+    public String showStudentRegistrationForm() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
+            return "sign-up-student";
+        return "redirect:/home";
+    }
+
+//    @PostMapping("/saveTeacher")
+//    public String registerTeacherAccount(@Valid @ModelAttribute("user") UserRegistrationDto user, BindingResult theBindingResult,
+//                                         Model model, HttpSession session) {
+//        if (theBindingResult.hasErrors())
+//            return "sign-up-teacher";
+//        try {
+//            userService.findByEmail(user.getEmail()).orElseThrow(() -> new Exception("User already Exists"));
+//            userService.saveTeacher(user);
+//            return "redirect:/";
+//        } catch (Exception e) {
+//            //session.setAttribute("message",);
+//            model.addAttribute("user", new CustomUser());
+//            return "sign-up-teacher";
+//        }
+//    }
+
 
 	@PostMapping("/saveTeacher")
 	public String registerTeacherAccount(@Valid @ModelAttribute("user") UserRegistrationDto user, BindingResult theBindingResult,
@@ -77,9 +99,9 @@ public class UserRegistrationController {
 		if (theBindingResult.hasErrors()) {
 			return "sign-up-teacher";
 		}
-		CustomUser existing = userService.findByEmail(user.getEmail());
-		if (existing != null) {
-			theModel.addAttribute("user", new CustomUser());
+		Optional<CustomUser> existing = userService.findByEmail(user.getEmail());
+		if (existing.isPresent()) {
+			theModel.addAttribute("user", user);
 			theModel.addAttribute("registrationError", "Email already exists.");
 			return "sign-up-teacher";
 		}
@@ -87,51 +109,52 @@ public class UserRegistrationController {
 		return "redirect:/";
 	}
 
-	@PostMapping("/updateTeacher")
-	public String updateTeacherAccount(@Valid @ModelAttribute("user") UserRegistrationDto registrationDto, BindingResult theBindingResult,
-									   Model theModel) {
-		// form validation
-		if (theBindingResult.hasErrors()) {
-			return "update-profile";
-		}
-		userService.saveTeacher(registrationDto);
-		return "redirect:/accountSetting";
-	}
+    @PostMapping("/updateTeacher")
+    public String updateTeacherAccount(@Valid @ModelAttribute("user") UserRegistrationDto registrationDto, BindingResult theBindingResult,
+                                       Model theModel) {
+        // form validation
+        if (theBindingResult.hasErrors()) {
+            return "update-profile";
+        }
+        userService.saveTeacher(registrationDto);
+        return "redirect:/accountSetting";
+    }
 
 
-	@PostMapping("/saveStudent")
-	public String registerStudentAccount(@Valid @ModelAttribute("user") UserRegistrationDto registrationDto, BindingResult theBindingResult,
-										 Model theModel) {
-		String userName = registrationDto.getEmail();
-		if (theBindingResult.hasErrors()) {
-			return "sign-up-student";
-		}
-		CustomUser existing = userService.findByEmail(userName);
-		if (existing != null) {
-			theModel.addAttribute("user", new UserRegistrationDto());
-			theModel.addAttribute("registrationError", "Email already exists.");
-			return "sign-up-student";
-		}
-		userService.saveStudent(registrationDto);
-		return "redirect:/login";
-	}
+//    @PostMapping("/saveStudent")
+//    public String registerStudentAccount(@Valid @ModelAttribute("user") UserRegistrationDto user, BindingResult theBindingResult,
+//                                         Model model) {
+//        String userName = registrationDto.getEmail();
+//        if (theBindingResult.hasErrors()) {
+//            return "sign-up-student";
+//        }
+//		userService.findByEmail(user)
+//        OpCustomUser existing = userService.findByEmail(userName);
+//        if (existing != null) {
+//            theModel.addAttribute("user", new UserRegistrationDto());
+//            theModel.addAttribute("registrationError", "Email already exists.");
+//            return "sign-up-student";
+//        }
+//        userService.saveStudent(registrationDto);
+//        return "redirect:/login";
+//    }
 
-	@GetMapping("/accountSetting")
-	public String accountSetting(Model theModel) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
-			return "sign-in";
-		List<CustomUser> theUser = userService.listMe();
-		theModel.addAttribute("user", theUser);
-		return "account-setting";
-	}
+    @GetMapping("/accountSetting")
+    public String accountSetting(Model theModel) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
+            return "sign-in";
+        List<CustomUser> theUser = userService.listMe();
+        theModel.addAttribute("user", theUser);
+        return "account-setting";
+    }
 
-	@GetMapping("/showFormForUpdateProfile")
-	public String showFormForUpdateProfile(@RequestParam("userId") Long theId, Model theModel) {
-		CustomUser theUser = userService.findUserById(theId);
-		theModel.addAttribute("user", theUser);
-		return "update-profile";
-	}
+    @GetMapping("/showFormForUpdateProfile")
+    public String showFormForUpdateProfile(@RequestParam("userId") Long theId, Model theModel) {
+        CustomUser theUser = userService.findUserById(theId);
+        theModel.addAttribute("user", theUser);
+        return "update-profile";
+    }
 
 
 }

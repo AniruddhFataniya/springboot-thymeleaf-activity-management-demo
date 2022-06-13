@@ -62,7 +62,8 @@
                 </div>
               </div>
               <div class="card-body">
-                <form th:action="@{/login}" method="post" role="form" class="text-start">
+
+                <form th:action="@{/}" method="post" role="form" class="text-start">
                 	<div th:if="${param.error}">
 						<div class="alert alert-danger">Invalid username or
 							password.</div>
@@ -89,6 +90,7 @@
                   <p class="mt-4 text-sm text-center">
                    <span>New user? <a href="/" th:href="@{/showTeacherSignupForm}">Teacher Registration</a> 
 						<a href="/" th:href="@{/showStudentSignupForm}">Student Registration</a>
+                     <a th:href="@{/oauth2/authorization/github}">Login with GitHub</a>
                   </p>
                 </form>
               </div>

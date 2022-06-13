@@ -1,7 +1,9 @@
 package com.rudraksh.springboot.model;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,18 +20,17 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name =  "user", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
-//@Table(name =  "user")
 @DynamicUpdate
 public class CustomUser implements UserDetails {
 	
 	@Id
 	@GeneratedValue(strategy =  GenerationType.IDENTITY)
-	@Column(name="id")
 	private Long id;
 	
 	@Column(name = "first_name")
@@ -37,7 +38,7 @@ public class CustomUser implements UserDetails {
 	
 	@Column(name = "last_name")
 	private String lastName;
-	
+
 	private String email;
 	
 	private String password;
@@ -52,18 +53,6 @@ public class CustomUser implements UserDetails {
 	
 	private Collection<Role> roles;
 
-	/*@OneToMany(targetEntity = Activity.class,cascade = CascadeType.ALL)
-	@JoinColumn(name="user_fk", referencedColumnName="id")
-	List<Activity> activities = new ArrayList<>();*/
-
-
-	/*public List<Activity> getActivities() {
-		return activities;
-	}
-
-	public void setActivities(List<Activity> activities) {
-		this.activities = activities;
-	}*/
 
 	public CustomUser() {
 
@@ -106,7 +95,12 @@ public class CustomUser implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+
+		List<SimpleGrantedAuthority> l = new ArrayList<>();
+		for(Role role : roles)
+			l.add(new SimpleGrantedAuthority(role.getName()));
+		l.forEach(i -> System.out.println(i.getAuthority().toString()));
+		return l;
 	}
 
 	public String getPassword() {

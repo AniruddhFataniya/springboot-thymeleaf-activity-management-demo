@@ -7,6 +7,7 @@ import com.rudraksh.springboot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class ActivityServiceImpl implements ActivityService{
     public void save(Activity theActivity) {
         // TODO Auto-generated method stub
         Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-        CustomUser currentUser = userRepository.findByEmail(auth.getName());
+        CustomUser currentUser = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new UsernameNotFoundException("Oops"));
         theActivity.setUser(currentUser);
         activityRepository.save(theActivity);
     }
@@ -39,9 +40,9 @@ public class ActivityServiceImpl implements ActivityService{
     public List<Activity> findMyActivity() {
         Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
         System.out.println(auth.toString());
-        System.out.println(auth.getPrincipal() instanceof CustomUser);
+        System.out.println(auth.getPrincipal() instanceof String);
 
-        CustomUser currentUser = userRepository.findByEmail(auth.getName());
+        CustomUser currentUser = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new UsernameNotFoundException("Oops"));
         return activityRepository.findByUser(currentUser);
     }
     @Override

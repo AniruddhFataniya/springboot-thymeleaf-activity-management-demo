@@ -43,17 +43,17 @@ public class UserServiceImpl implements UserService{
 
 
 	@Override
-	public CustomUser findByEmail(String userName) {
+	public Optional<CustomUser> findByEmail(String userName) {
 		return userRepository.findByEmail(userName);
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 	
-		CustomUser user = userRepository.findByEmail(username);
-		if(user == null) {
-			throw new UsernameNotFoundException("Invalid username or password.");
-		}
+		CustomUser user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Invalid username or password."));
+//		if(user == null) {
+//			throw new UsernameNotFoundException("Invalid username or password.");
+//		}
 		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));		
 	}
 	
@@ -63,11 +63,12 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public CustomUser saveTeacher(UserRegistrationDto registrationDto) {
-		CustomUser user = new CustomUser(registrationDto.getId(),registrationDto.getFirstName(), 
+		CustomUser user = new CustomUser(registrationDto.getId(),registrationDto.getFirstName(),
 				registrationDto.getLastName(), registrationDto.getEmail(),
 				passwordEncoder.encode(registrationDto.getPassword()), Arrays.asList(new Role("ROLE_TEACHER")));
-		
-				return userRepository.save(user);
+
+
+		return userRepository.save(user);
 	}
 
 	@Override
@@ -89,7 +90,7 @@ public class UserServiceImpl implements UserService{
 		 Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
 		 String username = auth.getName();
 			System.out.println(username);
-			CustomUser currentUser = userRepository.findByEmail(username);
+			CustomUser currentUser = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Oops"));
 			theActivity.setUser(currentUser);
 			activityRepository.save(theActivity);
 			System.out.println(theActivity.toString());
@@ -104,7 +105,7 @@ public class UserServiceImpl implements UserService{
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
 		 String username = auth.getName();
 			System.out.println(username);
-			CustomUser currentUser = userRepository.findByEmail(username);
+			CustomUser currentUser = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Oops"));
 			Long id = currentUser.getId();
 			
 		return userRepository.listMe(id);
@@ -144,7 +145,7 @@ public class UserServiceImpl implements UserService{
 		Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
 		 String username = auth.getName();
 			System.out.println(username);
-			CustomUser currentUser = userRepository.findByEmail(username);
+			CustomUser currentUser = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Oops"));
 			theId = currentUser.getId();
 			
 			Optional<CustomUser> result = userRepository.findById(theId);

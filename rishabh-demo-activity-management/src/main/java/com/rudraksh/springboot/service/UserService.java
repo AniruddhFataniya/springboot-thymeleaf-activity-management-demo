@@ -1,6 +1,7 @@
 package com.rudraksh.springboot.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,7 +13,7 @@ import com.rudraksh.springboot.web.dto.UserRegistrationDto;
 public interface UserService extends UserDetailsService{
 	CustomUser saveTeacher(UserRegistrationDto registrationDto);
 	CustomUser saveStudent(UserRegistrationDto registrationDto);
-	CustomUser findByEmail(String userName);
+	Optional<CustomUser> findByEmail(String userName);
 	void save(Activity theActivity);
 
 	Activity findById(int theId);
