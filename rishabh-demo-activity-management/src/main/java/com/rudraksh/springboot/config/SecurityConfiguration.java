@@ -1,6 +1,7 @@
 package com.rudraksh.springboot.config;
 
 
+import com.rudraksh.springboot.config.oauth.CustomOAuth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +37,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return auth;
 	}
 
+	@Autowired
+	private CustomOAuth2UserService customOAuth2UserService;
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(authenticationProvider());
@@ -49,14 +53,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 						"/js/**",
 						"/css/**",
 						"/img/**").permitAll().antMatchers(
-						"/updateTeacher/**","/home/**",
+						"/updateTeacher/**", "/home/**",
 						"/accountSetting/**",
 						"/showFormForUpdateProfile/**",
 						"/api/activities/**").authenticated()
 
 				//.anyRequest().authenticated()
 				.and()
-				.oauth2Login().and()
+				.oauth2Login().
+				loginPage("/").
+				userInfoEndpoint().
+				userService(customOAuth2UserService)
+				.and().and()
 				.formLogin()
 				.loginPage("/").
 				//loginProcessingUrl("/login").

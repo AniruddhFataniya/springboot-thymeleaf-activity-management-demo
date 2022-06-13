@@ -5,18 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,32 +14,44 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@Table(name =  "user", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+@Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @DynamicUpdate
 public class CustomUser implements UserDetails {
-	
+
 	@Id
-	@GeneratedValue(strategy =  GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(name = "first_name")
 	private String firstName;
-	
+
 	@Column(name = "last_name")
 	private String lastName;
 
 	private String email;
-	
+
 	private String password;
-	
+
+	public AuthenticationProvider getAuthenticationProvider() {
+		return authenticationProvider;
+	}
+
+	public void setAuthenticationProvider(AuthenticationProvider authenticationProvider) {
+		this.authenticationProvider = authenticationProvider;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "auth_provider")
+	private AuthenticationProvider authenticationProvider;
+
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(
 			name = "users_roles",
 			joinColumns = @JoinColumn(
-		            name = "user_id", referencedColumnName = "id"),
+					name = "user_id", referencedColumnName = "id"),
 			inverseJoinColumns = @JoinColumn(
-				            name = "role_id", referencedColumnName = "id"))
-	
+					name = "role_id", referencedColumnName = "id"))
+
 	private Collection<Role> roles;
 
 
@@ -58,8 +59,8 @@ public class CustomUser implements UserDetails {
 
 
 	}
-	
-	public CustomUser(Long id,String firstName, String lastName, String email, String password, Collection<Role> roles) {
+
+	public CustomUser(Long id, String firstName, String lastName, String email, String password, Collection<Role> roles) {
 
 		this.id = id;
 		this.firstName = firstName;
@@ -68,6 +69,7 @@ public class CustomUser implements UserDetails {
 		this.password = password;
 		this.roles = roles;
 	}
+
 	public Long getId() {
 		return id;
 	}
