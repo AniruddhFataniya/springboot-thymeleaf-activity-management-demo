@@ -21,75 +21,75 @@ import com.rudraksh.springboot.service.UserService;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	@Bean
-	public DaoAuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
-		auth.setUserDetailsService(userService);
-		auth.setPasswordEncoder(passwordEncoder());
-		return auth;
-	}
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
+        auth.setUserDetailsService(userService);
+        auth.setPasswordEncoder(passwordEncoder());
+        return auth;
+    }
 
-	@Autowired
-	private CustomOAuth2UserService customOAuth2UserService;
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
 
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(authenticationProvider());
-	}
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider());
+    }
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers(
-						"/registration/**",
-						"/saveTeacher/**",
-						"/js/**",
-						"/css/**",
-						"/img/**").permitAll().antMatchers(
-						"/updateTeacher/**", "/home/**",
-						"/accountSetting/**",
-						"/showFormForUpdateProfile/**",
-						"/api/activities/**").authenticated()
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests().antMatchers(
+                        "/registration/**",
+                        "/saveTeacher/**",
+                        "/js/**",
+                        "/css/**",
+                        "/img/**").permitAll().antMatchers(
+                        "/updateTeacher/**", "/home/**",
+                        "/accountSetting/**",
+                        "/showFormForUpdateProfile/**",
+                        "/api/activities/**").authenticated()
 
-				//.anyRequest().authenticated()
-				.and()
-				.oauth2Login().
-				loginPage("/").
-				userInfoEndpoint().
-				userService(customOAuth2UserService)
-				.and().and()
-				.formLogin()
-				.loginPage("/").
-				//loginProcessingUrl("/login").
-				defaultSuccessUrl("/home")
-				.permitAll()
-				.and()
-				.logout()
-				.invalidateHttpSession(true)
-				.clearAuthentication(true)
-				.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-				.logoutSuccessUrl("/").deleteCookies("JSESSIONID").addLogoutHandler(
-						new HeaderWriterLogoutHandler(
-								new ClearSiteDataHeaderWriter(
-										ClearSiteDataHeaderWriter.Directive.CACHE,
-										ClearSiteDataHeaderWriter.Directive.COOKIES,
-										ClearSiteDataHeaderWriter.Directive.STORAGE
-								)
-						)
-				)
-				.permitAll();
+                //.anyRequest().authenticated()
+                .and()
+                .oauth2Login().
+                loginPage("/").
+                userInfoEndpoint().
+                userService(customOAuth2UserService)
+                .and().and()
+                .formLogin()
+                .loginPage("/").
+                //loginProcessingUrl("/login").
+                        defaultSuccessUrl("/home")
+                .permitAll()
+                .and()
+                .logout()
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/").deleteCookies("JSESSIONID").addLogoutHandler(
+                        new HeaderWriterLogoutHandler(
+                                new ClearSiteDataHeaderWriter(
+                                        ClearSiteDataHeaderWriter.Directive.CACHE,
+                                        ClearSiteDataHeaderWriter.Directive.COOKIES,
+                                        ClearSiteDataHeaderWriter.Directive.STORAGE
+                                )
+                        )
+                )
+                .permitAll();
 
 
-		http.cors().disable();
-		http.csrf().disable();
-		http.headers().frameOptions().disable();
-	}
+        http.cors().disable();
+        http.csrf().disable();
+        http.headers().frameOptions().disable();
+    }
 
 }
